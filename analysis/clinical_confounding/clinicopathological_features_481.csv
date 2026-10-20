@@ -1,0 +1,26 @@
+Characteristic,HER2+,HER2-,P-value
+n,117,364,
+"Age, mean (SD), years",59.95 (12.44),61.15 (12.91),0.369
+"Sex, n (%)",,,0.042
+  Male,76 (65.0),197 (54.1),
+  Female,41 (35.0),167 (45.9),
+"Tumor location, n (%)",,,0.066
+  Right-sided colon,15 (12.8),86 (23.6),
+  Left-sided colon,33 (28.2),112 (30.8),
+  Rectum/rectosigmoid,58 (49.6),161 (44.2),
+  Other,7 (6.0),2 (0.5),
+  Missing,4 (3.4),3 (0.8),
+"Histology, n (%)",,,0.001
+  Adenocarcinoma,102 (87.2),298 (81.9),
+  Adenocarcinoma with mucinous/signet-ring features,2 (1.7),41 (11.3),
+  Other,0 (0.0),6 (1.6),
+  Missing,13 (11.1),19 (5.2),
+"Differentiation, n (%)",,,0.080
+  Well/Moderate,85 (72.6),265 (72.8),
+  Poor,7 (6.0),47 (12.9),
+  Missing,25 (21.4),52 (14.3),
+"Stage, n (%)",,,<0.001
+  I-II,51 (43.6),65 (17.9),
+  III,39 (33.3),113 (31.0),
+  IV,26 (22.2),150 (41.2),
+  Missing,1 (0.9),36 (9.9),

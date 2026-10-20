@@ -1,0 +1,4 @@
+model,n,n_positive,n_negative,roc_auc,auc_ci_method,auc_ci_95_lower,auc_ci_95_upper,auc_difference_vs_model1,paired_delong_difference_ci_95_lower,paired_delong_difference_ci_95_upper,paired_delong_p_value_vs_model1,paired_bootstrap_difference_ci_95_lower,paired_bootstrap_difference_ci_95_upper,paired_bootstrap_p_value_vs_model1
+Model 1: clinical covariates only,376,90,286,0.7418803418803419,DeLong,0.6836313394568451,0.8001293443038388,0.0,,,,,,
+Model 2: pathology score only,376,90,286,0.8138306138306138,DeLong,0.7648809359860563,0.8627802916751713,0.07195027195027193,,,,,,
+Model 3: clinical + pathology score,376,90,286,0.8791375291375292,DeLong,0.8401254312578305,0.9181496270172279,0.13725718725718727,0.08249851165357147,0.19201586286080308,8.97788108739453e-07,0.08333284770784775,0.19261946386946374,0.00019998000199980003

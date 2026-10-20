@@ -1,0 +1,15 @@
+name: her2pred
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip>=24
+  - pytorch>=2.1,<3
+  - torchvision>=0.16,<1
+  - pytorch-cuda=12.1
+  - openslide
+  - pip:
+      - -r requirements.txt
+      - -r requirements-kfb.txt

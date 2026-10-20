@@ -1,0 +1,3 @@
+# Optional Linux-only backend used when extracting features from KFB slides.
+# Uses ASlide version v1.7.0.
+Aslide @ git+https://github.com/MrPeterJin/ASlide.git@v1.7.0

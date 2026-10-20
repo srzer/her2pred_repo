@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+cache/
+data/
+manifests/*
+!manifests/tcga_standard_b_few_shot.csv
+results*/
+!results/
+!results/**
+checkpoints/
+*.pt
+*.pth
+*.npz
+*.log
