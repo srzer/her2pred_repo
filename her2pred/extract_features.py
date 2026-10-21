@@ -395,7 +395,7 @@ def parse_args(argv=None):
     p.add_argument("--encoder-layer", "--encoder_layer", default='layer4', choices=['layer3', 'layer4'],
                    help="ResNet50: layer4→2048-d（默认），layer3→1024-d（CLAM 式）")
     p.add_argument("--workers", type=int, default=4,
-                   help="读 tile 的进程数（0=串行；kfb 建议 0）")
+                   help="读 tile 的进程数，默认 4，0 表示串行读取")
     p.add_argument("--amp", action="store_true", help="fp16 前向（特征仍存 fp32）")
     p.add_argument("--coords-from", "--coords_from", default=None,
                    help='Reference feature directory providing extraction coordinates, labels, and splits.')

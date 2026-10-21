@@ -80,7 +80,7 @@ coordinates, the slide ID, and its label. The default resolution is 0.5 µm/px.
 For encoder comparisons on the released tumor patches, use
 `--coords-from features/ndpi_data/original` and select `resnet50` or `plip`.
 Reference files are matched by slide filename. Save augmented copies to
-`extracted/ndpi_data/augmented`. For KFB slides, use `--workers 0`.
+`extracted/ndpi_data/augmented`.
 GigaPath and PLIP pretrained weights are loaded from Hugging Face.
 
 ## Run experiments
