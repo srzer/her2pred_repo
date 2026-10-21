@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -131,9 +130,6 @@ def main():
     if args.dry_run:
         print(json.dumps(command, indent=2))
         return
-    if not os.environ.get("HER2PRED_APPEAR_FULL_CACHE"):
-        raise RuntimeError(
-            "set HER2PRED_APPEAR_FULL_CACHE to the released appearance cache")
     subprocess.run(command, check=True, cwd=repo)
 
 

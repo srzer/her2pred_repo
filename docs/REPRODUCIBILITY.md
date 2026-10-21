@@ -75,7 +75,6 @@ hf download zhezi12138/her2-prediction-checkpoints \
 hf download zhezi12138/her2-prediction-checkpoints \
   --repo-type model \
   --include 'ndpi_adversarial/*.pth' \
-  --include 'ndpi_adversarial/appearance_cache.npz' \
   --local-dir checkpoints
 ```
 
@@ -97,10 +96,9 @@ Use `python her2pred/extract_features.py --help` for all extraction options.
 
 ## 4. Train models
 
-Set the appearance cache path, then run five folds for each experiment:
+Run five folds for each experiment:
 
 ```bash
-export HER2PRED_APPEAR_FULL_CACHE="$PWD/checkpoints/ndpi_adversarial/appearance_cache.npz"
 for mode in ndpi_adversarial zero_shot few_shot; do
   for fold in 1 2 3 4 5; do
     python scripts/train_final.py \

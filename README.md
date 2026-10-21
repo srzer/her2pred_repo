@@ -39,10 +39,8 @@ Experiment names follow the checkpoint folder names:
 | `plip` | PLIP zero-shot model |
 | `few_shot` | Few-shot model trained with 36 TCGA cases |
 
-Training uses cached appearance targets stored at
-`ndpi_adversarial/appearance_cache.npz` in the checkpoint repository. Download
-the file and set `HER2PRED_APPEAR_FULL_CACHE` to its local path. The same cache
-supports `ndpi_adversarial`, `zero_shot`, and `few_shot` training.
+The appearance cache for `ndpi_adversarial`, `zero_shot`, and `few_shot`
+training is included in [`assets/appearance_cache.npz`](assets/appearance_cache.npz).
 
 ## Data
 
@@ -86,11 +84,10 @@ GigaPath and PLIP pretrained weights are loaded from Hugging Face.
 ## Run experiments
 
 Follow the [reproducibility guide](docs/REPRODUCIBILITY.md) to install the
-environment and download the features and appearance cache. Then train all
+environment and download the features. Then train all
 five folds of an experiment:
 
 ```bash
-export HER2PRED_APPEAR_FULL_CACHE="$PWD/checkpoints/ndpi_adversarial/appearance_cache.npz"
 for fold in 1 2 3 4 5; do
   python scripts/train_final.py \
     --mode zero_shot --fold "$fold" --gpu 0 \

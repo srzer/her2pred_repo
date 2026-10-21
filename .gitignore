@@ -12,4 +12,5 @@ checkpoints/
 *.pt
 *.pth
 *.npz
+!assets/appearance_cache.npz
 *.log

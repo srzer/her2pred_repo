@@ -40,9 +40,10 @@ from metrics_utils import binary_metrics, bce_loss                  # noqa: E402
 from parse_slide_ids import norm_key                               # noqa: E402
 from appearance_cache_scope import validate_coverage              # noqa: E402
 
-CACHE_DIR = os.environ.get('HER2PRED_CACHE_DIR', './cache')
 APPEAR_FULL_CACHE = os.environ.get(
-    'HER2PRED_APPEAR_FULL_CACHE', os.path.join(CACHE_DIR, 'appearance_full.npz'))
+    'HER2PRED_APPEAR_FULL_CACHE',
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                 'assets', 'appearance_cache.npz'))
 
 # 本进程内共享状态
 STATE = {'dom_of': {}, 'domains': [], 'cfg_dann': None, 'log': [],
@@ -348,9 +349,7 @@ def build_appearance_vectors_full():
     """
     import numpy as _np
     if not os.path.exists(APPEAR_FULL_CACHE):
-        raise FileNotFoundError(
-            f"Appearance cache missing: {APPEAR_FULL_CACHE}. "
-            "Download ndpi_adversarial/appearance_cache.npz and set HER2PRED_APPEAR_FULL_CACHE.")
+        raise FileNotFoundError(f"Appearance cache missing: {APPEAR_FULL_CACHE}")
     z = _np.load(APPEAR_FULL_CACHE, allow_pickle=True)
     X, sid = z['X'], z['sid']
     ok = ~_np.isnan(X).any(0)
