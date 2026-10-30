@@ -1,7 +1,7 @@
 # Reproducibility guide
 
-Follow these steps to install dependencies, prepare features, train models, and
-reproduce the results.
+This guide covers dependency installation, feature preparation, model training,
+and evaluation.
 
 ## 1. Create the environment
 
@@ -29,8 +29,8 @@ source .venv-analysis/bin/activate
 python -m pip install -r requirements-analysis.txt
 ```
 
-OpenSlide also needs its native library. On Debian/Ubuntu, install
-`libopenslide0`. On macOS, install `openslide` with Homebrew.
+OpenSlide also needs its native library. You can install `libopenslide0` on
+Debian/Ubuntu or `openslide` with Homebrew on macOS.
 
 ### KFB / ASlide support
 
@@ -42,12 +42,12 @@ python -m pip install -r requirements-kfb.txt
 python -c "from Aslide import Slide"
 ```
 
-The requirements file installs ASlide version `v1.7.0`. Use the import spelling
+The requirements file installs ASlide version `v1.7.0`. The Linux import is
 `from Aslide import Slide` on Linux.
 
 ASlide bundles the KFB reader's native libraries. If the import succeeds but a
-KFB slide fails to open because a shared library cannot be found, initialize
-the bundled runtime paths before importing `Slide`:
+KFB slide fails to open because a shared library cannot be found, you can
+initialize the bundled runtime paths before importing `Slide`:
 
 ```python
 from Aslide.bootstrap import setup_runtime_environment
@@ -56,14 +56,14 @@ setup_runtime_environment()
 from Aslide import Slide
 ```
 
-Alternatively, source the `setup_env.sh` installed inside the `Aslide` package
-before running feature extraction. See the
+Alternatively, you can source the `setup_env.sh` installed inside the `Aslide`
+package before feature extraction. The
 [upstream ASlide installation guide](https://github.com/MrPeterJin/ASlide/blob/main/docs/installation.md)
-for supported Linux distributions and backend-specific native dependencies.
+lists supported Linux distributions and backend-specific native dependencies.
 
 ## 2. Download checkpoints
 
-Download the `zero_shot` and `ndpi_adversarial` checkpoints from
+The `zero_shot` and `ndpi_adversarial` checkpoints are available from
 [Hugging Face](https://huggingface.co/zhezi12138/her2-prediction-checkpoints):
 
 ```bash
@@ -80,7 +80,7 @@ hf download zhezi12138/her2-prediction-checkpoints \
 
 ## 3. Prepare the dataset
 
-Download the feature dataset:
+You can download the feature dataset with:
 
 ```bash
 hf download zhezi12138/her2pred_pt_filtered_vista03 \
@@ -91,15 +91,15 @@ The training script prepares the downloaded features automatically. The TCGA
 labels and few-shot split are provided in
 [`tcga_standard_b_few_shot.csv`](../manifests/tcga_standard_b_few_shot.csv).
 
-For WSI feature extraction, see the [README example](../README.md#feature-extraction).
-Use `python her2pred/extract_features.py --help` for all extraction options.
+The [README example](../README.md#feature-extraction) covers WSI feature extraction.
+`python her2pred/extract_features.py --help` lists all extraction options.
 
 ## 4. Train models
 
-Run five folds for each experiment:
+The following loop trains all five folds of each experiment:
 
 ```bash
-for mode in ndpi_adversarial zero_shot few_shot; do
+for mode in ndpi_vanilla ndpi_adversarial zero_shot few_shot; do
   for fold in 1 2 3 4 5; do
     python scripts/train_final.py \
       --mode "$mode" --fold "$fold" --gpu 0 \
@@ -123,7 +123,7 @@ Training settings are listed in
 
 ### TCGA
 
-Run this command in Bash after training `zero_shot`. It averages the five
+This Bash command evaluates the trained `zero_shot` ensemble. It averages the five
 fold probabilities and calculates the evaluation metrics:
 
 ```bash
@@ -141,12 +141,12 @@ python her2pred/inference_tcga_ensemble.py "${args[@]}" \
   --cohort full --out-dir evaluation/zero_shot
 ```
 
-For `few_shot`, set `mode=few_shot`, use `--cohort heldout`, and change
-`--out-dir` to `evaluation/few_shot`.
+For `few_shot`, you can use `mode=few_shot` with `--cohort heldout` and
+`--out-dir evaluation/few_shot`.
 
 ### SVS/KFB
 
-Evaluate the trained `ndpi_adversarial` model in Bash:
+The trained `ndpi_adversarial` ensemble can be evaluated in Bash:
 
 ```bash
 mode=ndpi_adversarial
@@ -160,21 +160,24 @@ python her2pred/inference_external_ensemble.py "${args[@]}" \
   --root-dir ./features --out-dir evaluation/ndpi_adversarial
 ```
 
+For `ndpi_vanilla`, you can use `mode=ndpi_vanilla` with
+`--out-dir evaluation/ndpi_vanilla`.
+
 Both programs save ensemble predictions, summary metrics, and ROC/PR plots in
-the evaluation directory. The classification threshold is calculated from the
-OOF validation predictions.
+the evaluation directory. Classification thresholds come from OOF validation
+predictions.
 
 ## 6. Reproduce prediction statistics
 
-Recompute ROC-AUC, PR-AUC, confidence intervals, and paired statistical tests
-from the prediction tables in `results/`:
+The following command recomputes ROC-AUC, PR-AUC, confidence intervals, and paired
+statistical tests from the prediction tables in `results/`:
 
 ```bash
 python analysis/reproduce_prediction_statistics.py
 ```
 
-The command regenerates `results/prediction_statistics.json`. See
-[`results/README.md`](../results/README.md) for file descriptions.
+The command regenerates `results/prediction_statistics.json`. File descriptions
+are in [`results/README.md`](../results/README.md).
 
 ## 7. Clinical analysis
 
@@ -185,8 +188,8 @@ python analysis/clinical_confounding/analyze_clinical_confounding.py \
   --help
 ```
 
-See the [clinical analysis README](../analysis/clinical_confounding/README.md)
-for input columns and output files.
+The [clinical analysis README](../analysis/clinical_confounding/README.md)
+describes the input columns and output files.
 
 ## 8. Verification
 

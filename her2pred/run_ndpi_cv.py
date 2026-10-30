@@ -254,7 +254,9 @@ def run(cfg: ExperimentConfig, exp_name: str, ckpt_select: str,
         test_desc: str = 'svs + kfb',
         standard_b_manifest: str = DEFAULT_MANIFEST,
         standard_b_expected: dict = None,
-        skip_test: bool = False) -> dict:
+        skip_test: bool = False, fold: int = None) -> dict:
+    if fold is not None and not 1 <= fold <= cfg.n_folds:
+        raise ValueError(f'fold must be within 1..{cfg.n_folds}')
     exp_dir  = os.path.join(cfg.out_dir, exp_name)
     ckpt_dir = os.path.join(exp_dir, 'ckpts')
     os.makedirs(ckpt_dir, exist_ok=True)
@@ -348,6 +350,8 @@ def run(cfg: ExperimentConfig, exp_name: str, ckpt_select: str,
     oof_records, oof_labels, oof_probs = [], [], []
 
     for fold_idx, (train_recs, val_recs) in enumerate(folds, start=1):
+        if fold is not None and fold_idx != fold:
+            continue
         model, ckpt_path, history, val_labels, val_probs = train_one_fold(
             fold_idx, train_recs, val_recs, cfg, ckpt_dir, ckpt_select)
 
@@ -421,7 +425,7 @@ def run(cfg: ExperimentConfig, exp_name: str, ckpt_select: str,
                   f'Valid fold {fold_idx}')
 
     plot_loss_overlay(histories, os.path.join(exp_dir, 'valid_loss_folds.png'))
-    consolidate_histories(histories, exp_dir)
+    consolidate_histories(histories, exp_dir, first_fold=fold or 1)
 
     # ── 3. OOF valid 汇总 ─────────────────────────────────────
     print(f"\n{'-'*100}")
@@ -644,6 +648,8 @@ def parse_args():
                     help='Feature dataset root. Overrides --root.')
     ap.add_argument('--no_aug', action='store_true', help='训练不使用 aug 数据')
     ap.add_argument('--folds', type=int, default=5)
+    ap.add_argument('--fold', type=int, choices=range(1, 6),
+                    help='Train only this fold of the full cross-validation split')
     ap.add_argument('--epochs', type=int, default=64)
     ap.add_argument('--seed', type=int, default=42)
     ap.add_argument('--ckpt_select', default='last',
@@ -651,6 +657,8 @@ def parse_args():
                     help="'last' 与 final_train.py 现有行为一致（固定 epoch 预算，"
                          "不在 val 上做模型选择，valid 指标无乐观偏差）")
     ap.add_argument('--keep_ckpt', action='store_true')
+    ap.add_argument('--internal_only_no_test', action='store_true',
+                    help='Train on NDPI and save OOF predictions without external evaluation')
     return ap.parse_args()
 
 
@@ -667,7 +675,7 @@ def main():
     cfg = ExperimentConfig(
         name         = name,
         cv_pool_dirs = ndpi_train_dirs(root, use_aug),
-        test_dirs    = external_test_dirs(root),
+        test_dirs    = [] if args.internal_only_no_test else external_test_dirs(root),
         out_dir      = args.out_dir,
         n_folds      = args.folds,
         num_epochs   = args.epochs,
@@ -679,7 +687,8 @@ def main():
     print(f"  Test dirs : {cfg.test_dirs}")
     print(f"  Start     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    summary = run(cfg, name, args.ckpt_select, args.keep_ckpt)
+    summary = run(cfg, name, args.ckpt_select, args.keep_ckpt,
+                  skip_test=args.internal_only_no_test, fold=args.fold)
     print_final_table(summary)
     print(f"  End       : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 

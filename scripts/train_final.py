@@ -41,7 +41,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--mode",
-        choices=("ndpi_adversarial", "zero_shot", "few_shot",
+        choices=("ndpi_vanilla", "ndpi_adversarial", "zero_shot", "few_shot",
                  "ndpi-adversarial", "zero", "few"),
         required=True,
         help="Experiment name (aliases: ndpi-adversarial, zero, few)",
@@ -66,7 +66,7 @@ def main():
         "few": "few_shot",
     }.get(args.mode, args.mode)
 
-    ndpi_only = args.mode == "ndpi_adversarial"
+    ndpi_only = args.mode in ("ndpi_vanilla", "ndpi_adversarial")
     view = args.view.resolve()
     if not view.exists():
         view_command = [
@@ -81,22 +81,29 @@ def main():
     else:
         validate_existing_view(view, args.data_root, args.manifest, ndpi_only)
     name = f"final_{args.mode}_fold{args.fold}"
+    trainer = "run_ndpi_cv.py" if args.mode == "ndpi_vanilla" else "run_ndpi_cv_dann.py"
     command = [
-        args.python, str(repo / "her2pred/run_ndpi_cv_dann.py"),
+        args.python, str(repo / "her2pred" / trainer),
         "--gpu", args.gpu, "--root_dir", str(view),
-        "--epochs", "16", "--lr", "1e-4", "--weight_decay", "1e-4",
+        "--epochs", "16",
         "--keep_ckpt", "--ckpt_select", "last",
-        "--domain_mode", "appearregfull", "--lam_max", "15",
-        "--constant_lam", "--dom_weight", "1",
-        "--disc_hidden", "256", "--n_patch", "256",
-        "--fold_ids", str(args.fold),
         "--out_dir", str(args.out), "--name", name,
     ]
+    if args.mode == "ndpi_vanilla":
+        command += ["--fold", str(args.fold), "--internal_only_no_test"]
+    else:
+        command += [
+            "--lr", "1e-4", "--weight_decay", "1e-4",
+            "--domain_mode", "appearregfull", "--lam_max", "15",
+            "--constant_lam", "--dom_weight", "1",
+            "--disc_hidden", "256", "--n_patch", "256",
+            "--fold_ids", str(args.fold),
+        ]
     if args.mode == "ndpi_adversarial":
         # Only NDPI samples enter ndpi_adversarial optimization.
         # There is no SVS/KFB/TCGA loader and no site-adversarial objective.
         command += ["--internal_only_no_test"]
-    else:
+    elif not ndpi_only:
         held = view / "tcga_data/heldout"
         expected = {
             "candidate": 324, "eligible": 324, "positive": 66,

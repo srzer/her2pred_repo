@@ -76,11 +76,11 @@ def save_fold_history(history: dict, exp_dir: str, fold: int) -> None:
                 ["fold", "epoch"] + val_keys, val_rows)
 
 
-def consolidate_histories(histories: list[dict], exp_dir: str) -> None:
+def consolidate_histories(histories: list[dict], exp_dir: str, first_fold: int = 1) -> None:
     """Write one experiment-level JSON in addition to fold-level live traces."""
     payload = {"schema_version": 1, "folds": [
         {"fold": index, "history": {
             key: [_clean(x) for x in values] for key, values in history.items()
-        }} for index, history in enumerate(histories, 1)
+        }} for index, history in enumerate(histories, first_fold)
     ]}
     _atomic_json(Path(exp_dir) / "learning_curves.json", payload)

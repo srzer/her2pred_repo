@@ -13,10 +13,11 @@ checkpoint download, training, inference, and analysis instructions are in
 1. `her2pred/extract_features.py`: WSI tile feature extraction.
 2. `her2pred/build_filtered.py`: coordinate-matched tumor filtering.
 3. `scripts/create_training_view.py`: prepares PyTorch feature files for training.
-4. `scripts/train_final.py`: trains one fold of `ndpi_adversarial`,
+4. `scripts/train_final.py`: trains one fold of `ndpi_vanilla`, `ndpi_adversarial`,
    `zero_shot`, or `few_shot`.
 5. `her2pred/inference_tcga_ensemble.py`: runs ensemble inference on TCGA.
-   `her2pred/inference_external_ensemble.py` evaluates SVS/KFB.
+   `her2pred/inference_external_ensemble.py` evaluates `ndpi_vanilla` and
+   `ndpi_adversarial` on SVS/KFB.
 6. `analysis/clinical_confounding/`: contains cohort summaries and clinical
    covariate analysis.
 7. `analysis/reproduce_prediction_statistics.py`: recomputes ROC/PR metrics,
@@ -55,7 +56,7 @@ and
 
 ## Feature extraction
 
-Extract GigaPath features from a directory of HER2-positive NDPI slides:
+You can extract GigaPath features from a directory of HER2-positive NDPI slides:
 
 ```bash
 python her2pred/extract_features.py \
@@ -64,28 +65,27 @@ python her2pred/extract_features.py \
   --out extracted/ndpi_data/original --gpu 0
 ```
 
-Use `--label 0` for negative slides. Each `.pt` file contains patch features,
+We use `--label 0` for negative slides. Each `.pt` file contains patch features,
 coordinates, the slide ID, and its label. The default resolution is 0.5 µm/px.
 
 | Option | Usage |
 |---|---|
 | `--format` | `ndpi`, `svs`, or `kfb` |
 | `--encoder` | `gigapath`, `resnet50`, or `plip` |
-| `--coords-from` | Extract patches at coordinates from matching reference `.pt` files |
-| `--stain-norm macenko` | Apply Macenko stain normalization |
-| `--augment` | Generate augmented features |
+| `--coords-from` | Patch coordinates from matching reference `.pt` files |
+| `--stain-norm macenko` | Macenko stain normalization |
+| `--augment` | Augmented features |
 
-For encoder comparisons on the released tumor patches, use
-`--coords-from features/ndpi_data/original` and select `resnet50` or `plip`.
-Reference files are matched by slide filename. Save augmented copies to
+For encoder comparisons on the released tumor patches, you can use
+`--coords-from features/ndpi_data/original` with `resnet50` or `plip`.
+Reference files are matched by slide filename. Augmented copies can be saved to
 `extracted/ndpi_data/augmented`.
 GigaPath and PLIP pretrained weights are loaded from Hugging Face.
 
 ## Run experiments
 
-Follow the [reproducibility guide](docs/REPRODUCIBILITY.md) to install the
-environment and download the features. Then train all
-five folds of an experiment:
+The [reproducibility guide](docs/REPRODUCIBILITY.md) covers environment setup
+and feature downloads. This example trains all five folds of `zero_shot`:
 
 ```bash
 for fold in 1 2 3 4 5; do
@@ -96,9 +96,9 @@ for fold in 1 2 3 4 5; do
 done
 ```
 
-Use `ndpi_adversarial` or `few_shot` as the mode and directory names to run
-those experiments. The guide includes [ensemble evaluation commands](docs/REPRODUCIBILITY.md#5-run-inference)
-for the trained models.
+The training modes are `ndpi_vanilla`, `ndpi_adversarial`, `zero_shot`, and
+`few_shot`. The guide includes
+[ensemble evaluation commands](docs/REPRODUCIBILITY.md#5-run-inference).
 
 To recompute the published metrics from the prediction tables:
 
