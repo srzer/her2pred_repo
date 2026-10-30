@@ -14,7 +14,7 @@ PR-AUC is computed by trapezoidal integration of the precision-recall curve.
 | `few_shot` | Held-out TCGA, n=288 | 0.762 | 0.393 |
 
 The `few_shot` experiment uses 36 TCGA cases for adaptation. The split is in
-[`tcga_standard_b_few_shot.csv`](../manifests/tcga_standard_b_few_shot.csv).
+[`tcga_split.csv`](../manifests/tcga_split.csv).
 
 To recompute metrics, confidence intervals, and paired tests:
 

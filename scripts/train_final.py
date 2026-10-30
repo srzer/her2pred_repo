@@ -50,7 +50,7 @@ def main():
                         help="Clean dataset variant: filtered or unfiltered")
     parser.add_argument(
         "--manifest", type=Path,
-        default=repo / "manifests/tcga_standard_b_few_shot.csv",
+        default=repo / "manifests/tcga_split.csv",
         help="TCGA 324-case manifest (default: bundled few_shot 36/288 split)",
     )
     parser.add_argument("--out", type=Path, required=True)

@@ -4,7 +4,7 @@ __pycache__/
 cache/
 data/
 manifests/*
-!manifests/tcga_standard_b_few_shot.csv
+!manifests/tcga_split.csv
 results*/
 !results/
 !results/**

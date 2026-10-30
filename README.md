@@ -46,7 +46,7 @@ training is included in [`assets/appearance_cache.npz`](assets/appearance_cache.
 ## Data
 
 The TCGA labels and split are provided in
-[`manifests/tcga_standard_b_few_shot.csv`](manifests/tcga_standard_b_few_shot.csv).
+[`manifests/tcga_split.csv`](manifests/tcga_split.csv).
 The `few_shot` experiment uses 36 cases for training and 288 for evaluation.
 
 The PyTorch feature datasets are available at
@@ -85,20 +85,19 @@ GigaPath and PLIP pretrained weights are loaded from Hugging Face.
 ## Run experiments
 
 The [reproducibility guide](docs/REPRODUCIBILITY.md) covers environment setup
-and feature downloads. This example trains all five folds of `zero_shot`:
+and feature downloads. This example trains one fold of `zero_shot`:
 
 ```bash
-for fold in 1 2 3 4 5; do
-  python scripts/train_final.py \
-    --mode zero_shot --fold "$fold" --gpu 0 \
-    --data-root ./features \
-    --view training_view/zero_shot --out results/zero_shot
-done
+mode=zero_shot
+python scripts/train_final.py \
+  --mode "$mode" --fold 1 --gpu 0 \
+  --data-root ./features \
+  --view "training_view/$mode" --out "results/$mode"
 ```
 
 The training modes are `ndpi_vanilla`, `ndpi_adversarial`, `zero_shot`, and
 `few_shot`. The guide includes
-[ensemble evaluation commands](docs/REPRODUCIBILITY.md#5-run-inference).
+[ensemble evaluation commands](docs/REPRODUCIBILITY.md#3-ensemble-inference).
 
 To recompute the published metrics from the prediction tables:
 

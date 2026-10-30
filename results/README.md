@@ -17,7 +17,7 @@ names match the checkpoint folders on Hugging Face.
 Each prediction table includes an anonymous case key, a binary label, and
 model probabilities. The SVS/KFB table also includes the slide source.
 The TCGA split is defined in
-[`tcga_standard_b_few_shot.csv`](../manifests/tcga_standard_b_few_shot.csv).
+[`tcga_split.csv`](../manifests/tcga_split.csv).
 
 Run from the repository root:
 
